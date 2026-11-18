@@ -657,7 +657,8 @@ function setupEventListeners() {
 
 // The entry notice holds the interface back until the reader enters, so the UI
 // bootstrap runs on the flp:enter event dispatched by the inline gate script.
-// Telegram.WebApp.ready() above and the service worker still run on load.
+// Telegram.WebApp.ready() runs from the DOMContentLoaded handler below, and the
+// service worker registers on load.
 document.addEventListener('DOMContentLoaded', () => {
   initTelegramSdk();
   if (window.FLP_GATE_HOLD && !window.FLP_ENTERED) {

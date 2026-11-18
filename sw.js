@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gambia-flp-v22';
+const CACHE_NAME = 'gambia-flp-v23';
 
 // Only the app shell and the primary audio source per track. The duplicate
 // fallback encodings are fetched on demand rather than bloating install.
@@ -25,8 +25,12 @@ const ASSETS_TO_CACHE = [
   './audio/wolof/wol_ecd2_w01_story.ogg'
 ];
 
-const CORE_ASSETS = ASSETS_TO_CACHE.filter((url) => !/\.(json|ogg|m4a)$/.test(url) || url.endsWith('manifest.json'));
-const OPTIONAL_ASSETS = ASSETS_TO_CACHE.filter((url) => CORE_ASSETS.indexOf(url) === -1);
+// Classified by folder, not by file extension: a recording in a new format, or a
+// data file with a ?v= tag, must never be able to fail the shell install, and a
+// shell file must never be demoted to optional.
+const isContent = (url) => url.startsWith('./data/') || url.startsWith('./audio/');
+const CORE_ASSETS = ASSETS_TO_CACHE.filter((url) => !isContent(url));
+const OPTIONAL_ASSETS = ASSETS_TO_CACHE.filter(isContent);
 
 // Audio is large and immutable, so it is served cache-first. Everything else
 // is code or content that must be allowed to change: serving index.html
@@ -45,9 +49,21 @@ self.addEventListener('install', (event) => {
       // Lesson data and recordings are allowed to fail one by one, so a single
       // missing file cannot deny a teacher the whole guide.
       return cache.addAll(CORE_ASSETS).then(() => Promise.all(
-        OPTIONAL_ASSETS.map((url) => cache.add(url).catch((err) => {
-          console.warn('Skipped for offline cache:', url, err);
-        }))
+        OPTIONAL_ASSETS.map(async (url) => {
+          try {
+            await cache.add(url);
+          } catch (err) {
+            // Do not lose a recording the teacher already had: carry the copy
+            // from the previous cache into this one before activate deletes it.
+            const carried = await caches.match(url);
+            if (carried) {
+              await cache.put(url, carried);
+              console.warn('Carried forward from the previous cache:', url);
+            } else {
+              console.warn('Skipped for offline cache:', url, err);
+            }
+          }
+        })
       ));
     })
   );

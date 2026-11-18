@@ -1689,7 +1689,8 @@ function loadEmbeddedFallback() {
 // reader enters, so the UI bootstrap runs on the flp:enter event dispatched by
 // the inline gate script. The page fetches nothing from data/ before that point
 // (the service worker's precache does, and that is expected);
-// Telegram.WebApp.ready() above and the service worker still run on load.
+// Telegram.WebApp.ready() runs from the DOMContentLoaded handler below, and the
+// service worker registers on load.
 document.addEventListener('DOMContentLoaded', () => {
   initTelegramSdk();
   // Chrome fires beforeinstallprompt once, near load, while the reader is still
