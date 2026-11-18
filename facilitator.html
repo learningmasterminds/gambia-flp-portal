@@ -27,6 +27,7 @@
       flex-direction: column;
       height: 100vh;
       height: 100dvh;
+      overflow: hidden;
       background: #f4f7f8;
       color: #14232b;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
@@ -40,55 +41,83 @@
 
     .flp-gate__head {
       flex: 0 0 auto;
-      padding: 14px 18px 12px;
+      position: relative;
+      z-index: 2;
+      padding: 8px 16px 7px;
       background: #0d3b4c;
       color: #ffffff;
       text-align: center;
     }
-    .flp-gate__flag { display: block; margin: 0 auto 8px; line-height: 0; }
-    .flp-gate__inscription { margin: 0; font-size: 12.5px; line-height: 1.5; color: #ffffff; }
+    .flp-gate__flag { display: block; margin: 0 auto 5px; line-height: 0; }
+    .flp-gate__flag svg { width: 30px; height: 20px; }
+    .flp-gate__inscription { margin: 0; font-size: 11.5px; line-height: 1.4; color: #ffffff; }
     .flp-gate__inscription strong { font-weight: 700; }
 
+    .flp-gate__main {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
     .flp-gate__scroll {
       flex: 1 1 auto;
       min-height: 0;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 18px 18px 22px;
+      padding: 0 0 26px;
     }
+    .flp-gate__body { padding: 13px 18px 0; }
     .flp-gate__scroll:focus { outline: none; }
     .flp-gate__scroll:focus-visible { outline: 3px solid #0d3b4c; outline-offset: -3px; }
-    .flp-gate__scroll p { margin: 0 0 12px; font-size: 15.5px; line-height: 1.55; }
+    .flp-gate__scroll p { margin: 0 0 8px; font-size: 14.5px; line-height: 1.46; }
     .flp-gate__scroll p:last-child { margin-bottom: 0; }
     .flp-gate__title {
-      margin: 0 0 12px;
-      font-size: 22px;
-      line-height: 1.25;
+      margin: 0 0 8px;
+      font-size: 19px;
+      line-height: 1.22;
       font-weight: 800;
       color: #0d3b4c;
       letter-spacing: -0.01em;
     }
     .flp-gate h2 {
-      margin: 18px 0 6px;
-      font-size: 15px;
+      margin: 11px 0 3px;
+      font-size: 14px;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-transform: uppercase;
       color: #0d3b4c;
     }
     .flp-gate__scroll p.flp-gate__updated {
-      margin: 18px 0 0;
+      margin: 12px 0 0;
       font-size: 12.5px;
       font-style: italic;
       color: #46585f;
     }
 
 
-    /* Short screens: never trap Click to Enter below the fold. */
-    @media (max-height: 520px) {
-      .flp-gate { overflow-y: auto; }
-      .flp-gate__scroll { flex: none; overflow: visible; }
+    /* The acknowledgement sits at the end of the notice, so nothing can be
+       trapped below a fixed bar: the reader scrolls to it. */
+    .flp-gate__cue {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 44px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 5px;
+      background: linear-gradient(to bottom, rgba(244, 247, 248, 0) 0%, rgba(244, 247, 248, 0.9) 52%, #f4f7f8 100%);
+      color: #0d3b4c;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
     }
+    .flp-gate__cue.is-hidden { opacity: 0; }
+    .flp-gate__arrow { margin-left: 5px; font-size: 12px; }
     /* Tap target for the feedback link inside the notice text. */
     .flp-gate__scroll a {
       display: inline-block;
@@ -99,12 +128,23 @@
     }
 
     .flp-gate__bar {
-      flex: 0 0 auto;
-      padding: 10px 18px calc(12px + env(safe-area-inset-bottom, 0px));
-      background: #ffffff;
-      border-top: 1px solid #c8d4d9;
-      box-shadow: 0 -8px 20px rgba(9, 26, 36, 0.10);
+      margin: 15px 18px 0;
+      padding: 13px 0 0;
+      border-top: 2px solid #c8d4d9;
+      background: transparent;
     }
+    .flp-gate__foot {
+      flex: 0 0 auto;
+      position: relative;
+      z-index: 2;
+      margin: 0;
+      padding: 7px 12px calc(7px + env(safe-area-inset-bottom, 0px));
+      border-top: 1px solid #c8d4d9;
+      background: #e9eff2;
+      text-align: center;
+    }
+    .flp-gate__credit { margin: 0; font-size: 11.5px; line-height: 1.35; font-weight: 700; color: #0d3b4c; }
+    .flp-gate__credit2 { margin: 2px 0 0; font-size: 10.5px; line-height: 1.35; color: #46585f; }
     .flp-gate__ack {
       display: flex;
       align-items: flex-start;
@@ -151,10 +191,10 @@
     .flp-gate__btn:focus-visible { outline: 3px solid #b35c00; outline-offset: 3px; }
 
     @media (max-width: 420px) {
-      .flp-gate__scroll { padding: 14px 14px 18px; }
-      .flp-gate__bar { padding: 8px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
-      .flp-gate__title { font-size: 20px; }
-      .flp-gate__scroll p { font-size: 15px; }
+      .flp-gate__body { padding: 11px 14px 0; }
+      .flp-gate__bar { margin: 18px 14px 0; padding: 14px 0 0; }
+      .flp-gate__title { font-size: 19px; }
+      .flp-gate__scroll p { font-size: 14px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .flp-gate * { transition: none !important; animation: none !important; }
@@ -170,7 +210,8 @@
         color: #000000 !important;
       }
       .flp-gate__scroll { overflow: visible !important; height: auto !important; padding: 0 !important; }
-      .flp-gate__bar { box-shadow: none !important; border-top: 1px solid #999999 !important; }
+      .flp-gate__bar { border-top: 1px solid #999999 !important; }
+      .flp-gate__cue { display: none !important; }
     }
   </style>
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -197,46 +238,55 @@
        It is a notice, not access control.
        =================================================================== -->
   <div id="flp-gate" class="flp-gate" role="dialog" aria-modal="true" aria-labelledby="flp-gate-title" aria-describedby="flp-gate-intro" tabindex="-1">
-    <div class="flp-gate__head">
-      <span class="flp-gate__flag"><svg viewBox="0 0 36 24" width="36" height="24" role="img" aria-label="The Gambia" focusable="false" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="24" fill="#fff"/><rect width="36" height="8" fill="#ce1126"/><rect y="9.333" width="36" height="5.333" fill="#0c1c8c"/><rect y="16" width="36" height="8" fill="#3a7728"/></svg></span>
-      <p class="flp-gate__inscription"><strong>Republic of The Gambia</strong><br><strong>Ministry of Basic and Secondary Education (MoBSE)</strong><br><strong>Gambia FLP — Teacher Portal</strong></p>
+    <div class="flp-gate__main">
+      <div class="flp-gate__head">
+        <span class="flp-gate__flag"><svg viewBox="0 0 36 24" width="36" height="24" role="img" aria-label="The Gambia" focusable="false" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="24" fill="#fff"/><rect width="36" height="8" fill="#ce1126"/><rect y="9.333" width="36" height="5.333" fill="#0c1c8c"/><rect y="16" width="36" height="8" fill="#3a7728"/></svg></span>
+        <p class="flp-gate__inscription"><strong>Republic of The Gambia</strong><br><strong>Ministry of Basic and Secondary Education (MoBSE)</strong><br><strong>Gambia FLP — Teacher Portal</strong></p>
+      </div>
+      <div class="flp-gate__scroll" id="flp-gate-scroll" tabindex="0" role="region" aria-label="Entry notice and acknowledgement">
+      <div class="flp-gate__body">
+        <h1 class="flp-gate__title" id="flp-gate-title">Welcome to the Gambia FLP Teacher Portal</h1>
+
+        <p id="flp-gate-intro">This portal gives teachers and trainers early access to the Teacher Guides for ECD 2, ECD 3 and Grade 1 in all eight languages of instruction, the Grade 1 numeracy guide for the seven national languages, and the facilitator guides used in teacher training.</p>
+
+        <p>It is a temporary measure, developed by the CREDD–MoBSE Material Development Team to support teacher training and early access to the materials. It remains available pending the completion, by the MoBSE EdTech team, of the full integration and transition of the FLP hub to a dedicated page on the MoBSE EdTech hub.</p>
+
+        <p><strong>Using it for the first time.</strong> Choose your subject, language and class at the top of the guide. The eight languages are English, Jola, Mandinka, Manjaku, Pulaar, Seereer, Soninke and Wolof. The facilitator guides are for trainers running training sessions; the teacher guides are for classroom use.</p>
+
+        <p><strong>Using it without internet.</strong> After your first full visit while connected, most of the guide is saved on your device and opens without a connection. The first visit downloads the guide for the language you choose, so do it where the connection is good. For the safest offline copy, add the portal to your home screen: on Android, open the browser menu and choose <em>Add to Home screen</em>; on iPhone, do this in Safari — tap <em>Share</em>, then <em>Add to Home Screen</em>. Audio plays only for a recording you have already opened once while connected. Connect from time to time so that corrected content reaches you.</p>
+
+        <h2>Attribution</h2>
+        <p>The portal and the material within it are the official property of the Government of The Gambia, developed under the Gambia FLP of the Ministry of Basic and Secondary Education.</p>
+
+        <h2>Feedback</h2>
+        <p>If a guide will not open, a lesson is missing or incorrect, or you wish to report anything else about
+        the portal, use the feedback form: <a href="https://docs.google.com/forms/d/e/1FAIpQLSef-l8IznFIot16FS-DbJ_R0f1JGIL3BQMBK-W7LLDPpjKhGQ/viewform" target="_blank" rel="noopener">Report a problem or send
+        feedback</a>. The form asks which guide and which page you were on, so that the fault can be traced.
+        Please do not include the names of learners, or any personal details about a child, in the form.</p>
+
+        <!-- BRIEF section 5: this date is the publishing commit date. With no build
+             step it is fixed here and must be edited on each release. -->
+        <p class="flp-gate__updated">Last updated: 18 November 2026</p>
+      </div>
+
+      <div class="flp-gate__bar" id="flp-ack-block">
+        <label class="flp-gate__ack" for="flp-ack">
+          <input type="checkbox" id="flp-ack" aria-describedby="flp-ack-help" autocomplete="off">
+          <span class="flp-gate__acklabel">I have read and understood this notice.</span>
+        </label>
+        <p class="flp-gate__sub">You will see this notice each time you open the portal.</p>
+        <p class="flp-gate__help" id="flp-ack-help">Tick the box to continue.</p>
+        <button type="button" class="flp-gate__btn" id="flp-enter" disabled autocomplete="off" aria-describedby="flp-ack-help">Click to Start</button>
+        <noscript><p class="flp-gate__noscript">This portal needs JavaScript to open. Turn JavaScript on, then reload this page.</p></noscript>
+      </div>
+
     </div>
-
-    <div class="flp-gate__scroll" id="flp-gate-scroll" tabindex="0" role="region" aria-label="Notice text">
-      <h1 class="flp-gate__title" id="flp-gate-title">Welcome to the Gambia FLP Teacher Portal</h1>
-
-      <p id="flp-gate-intro">This portal gives teachers and trainers early access to the Teacher Guides for ECD 2, ECD 3 and Grade 1 in all eight languages of instruction, the Grade 1 numeracy guide for the seven national languages, and the facilitator guides used in teacher training.</p>
-
-      <p>It is a temporary measure, developed by the CREDD–MoBSE Material Development Team to support teacher training and early access to the materials. It remains available pending the completion, by the MoBSE EdTech team, of the full integration and transition of the FLP hub to a dedicated page on the MoBSE EdTech hub.</p>
-
-      <p><strong>Using it for the first time.</strong> Choose your subject, language and class at the top of the guide. The eight languages are English, Jola, Mandinka, Manjaku, Pulaar, Seereer, Soninke and Wolof. The facilitator guides are for trainers running training sessions; the teacher guides are for classroom use.</p>
-
-      <p><strong>Using it without internet.</strong> After your first full visit while connected, most of the guide is saved on your device and opens without a connection. The first visit downloads the guide for the language you choose, so do it where the connection is good. For the safest offline copy, add the portal to your home screen: on Android, open the browser menu and choose <em>Add to Home screen</em>; on iPhone, do this in Safari — tap <em>Share</em>, then <em>Add to Home Screen</em>. Audio plays only for a recording you have already opened once while connected. Connect from time to time so that corrected content reaches you.</p>
-
-      <h2>Attribution</h2>
-      <p>The portal and the material within it are the official property of the Government of The Gambia, developed under the Gambia FLP of the Ministry of Basic and Secondary Education.</p>
-
-      <h2>Feedback</h2>
-      <p>If a guide will not open, a lesson is missing or incorrect, or you wish to report anything else about
-      the portal, use the feedback form: <a href="https://docs.google.com/forms/d/e/1FAIpQLSef-l8IznFIot16FS-DbJ_R0f1JGIL3BQMBK-W7LLDPpjKhGQ/viewform" target="_blank" rel="noopener">Report a problem or send
-      feedback</a>. The form asks which guide and which page you were on, so that the fault can be traced.
-      Please do not include the names of learners, or any personal details about a child, in the form.</p>
-
-      <!-- BRIEF section 5: this date is the publishing commit date. With no build
-           step it is fixed here and must be edited on each release. -->
-      <p class="flp-gate__updated">Last updated: 18 November 2026</p>
+      <div class="flp-gate__cue" id="flp-cue" aria-hidden="true">Scroll to the end<span class="flp-gate__arrow">↓</span></div>
     </div>
-
-    <div class="flp-gate__bar">
-      <label class="flp-gate__ack" for="flp-ack">
-        <input type="checkbox" id="flp-ack" aria-describedby="flp-ack-help" autocomplete="off">
-        <span class="flp-gate__acklabel">I have read and understood this notice.</span>
-      </label>
-      <p class="flp-gate__sub">You will see this notice each time you open the portal.</p>
-      <p class="flp-gate__help" id="flp-ack-help">Tick the box to continue.</p>
-      <button type="button" class="flp-gate__btn" id="flp-enter" disabled autocomplete="off" aria-describedby="flp-ack-help">Click to Start</button>
-      <noscript><p class="flp-gate__noscript">This portal needs JavaScript to open. Turn JavaScript on, then reload this page.</p></noscript>
-    </div>
+    <div class="flp-gate__foot">
+        <p class="flp-gate__credit">Developed by the CREDD–MoBSE Material Development Team</p>
+        <p class="flp-gate__credit2">Gambia FLP · Ministry of Basic and Secondary Education</p>
+      </div>
   </div>
 
   <!-- The portal interface. Hidden and inert until the reader enters. -->
@@ -384,6 +434,8 @@
     </section>
 
     <p class="fac-source-note" id="fac-source-note"></p>
+
+    <p class="app-credit" style="margin: 20px 16px 26px; text-align: center; font-size: 12px; line-height: 1.45; color: #5b6b72;">Developed by the CREDD–MoBSE Material Development Team<br>Gambia FLP · Ministry of Basic and Secondary Education</p>
   </main>
 
   <!-- Session timer (same dock as the classroom timer) -->
@@ -475,6 +527,27 @@
 
       enterBtn.addEventListener('click', enter);
 
+      // The acknowledgement block sits at the end of the notice. The cue points
+      // down to it and fades out once that block is on screen or the end is in
+      // sight; it is decoration, so it is hidden from assistive technology.
+      var cue = document.getElementById('flp-cue');
+      var block = document.getElementById('flp-ack-block');
+      var scroller = document.getElementById('flp-gate-scroll');
+      function hideCue() { if (cue) cue.classList.add('is-hidden'); }
+      function updateCue() {
+        if (!scroller || !cue) return;
+        if (scroller.scrollTop + scroller.clientHeight >= scroller.scrollHeight - 48) hideCue();
+        else cue.classList.remove('is-hidden');
+      }
+      if (scroller) scroller.addEventListener('scroll', updateCue, { passive: true });
+      if ('IntersectionObserver' in window && block && scroller) {
+        new IntersectionObserver(function (entries) {
+          for (var i = 0; i < entries.length; i++) {
+            if (entries[i].isIntersecting) hideCue();
+          }
+        }, { root: scroller, threshold: 0.2 }).observe(block);
+      }
+
       // A restored page (back/forward, some reloads) can bring the box back
       // ticked, or the button back enabled, with no change event fired.
       function resetGate() {
@@ -482,6 +555,8 @@
         ack.checked = false;
         enterBtn.disabled = true;
         enterBtn.setAttribute('aria-describedby', 'flp-ack-help');
+        if (scroller) scroller.scrollTop = 0;
+        if (cue) cue.classList.remove('is-hidden');
       }
       resetGate();
       window.addEventListener('pageshow', function (e) { if (e.persisted) resetGate(); });
