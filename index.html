@@ -1,11 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="flp-gate-open">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Gambia FLP - Interactive Teacher Guide</title>
   <meta name="description" content="Digital interactive Teacher Guide for ECD 2, ECD 3 and Grade 1 (Term 1) in all eight Gambian languages of instruction - Gambia Foundational Learning Programme (World Bank / MoBSE / Learning Masterminds).">
   <meta name="theme-color" content="#0d3b4c">
+  <!-- Entry notice (BRIEF section 3/5). Inline and self-contained: system fonts
+       only, no external request, so it paints before styles.css, app.js or any
+       lesson data. Nothing here is a security control: the repository is public
+       and every file in it can be fetched directly. The notice exists so that
+       every reader meets the notice before using the portal. -->
+  <style>
+    html.flp-gate-open, html.flp-gate-open body { overflow: hidden !important; }
+
+    /* Hold the visual interface back until the reader enters. This lives here,
+       not in styles.css, so a slow or failed stylesheet cannot reveal the app. */
+    #app-shell { display: none !important; }
+    html.flp-entered #app-shell { display: block !important; }
+
+    .flp-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 2147483000;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      background: #f4f7f8;
+      color: #14232b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.55;
+      text-align: left;
+      overscroll-behavior: contain;
+      -webkit-text-size-adjust: 100%;
+    }
+    .flp-gate *, .flp-gate *::before, .flp-gate *::after { box-sizing: border-box; }
+
+    .flp-gate__head {
+      flex: 0 0 auto;
+      padding: 14px 18px 12px;
+      background: #0d3b4c;
+      color: #ffffff;
+    }
+    .flp-gate__flag { display: block; margin: 0 0 8px; line-height: 0; }
+    .flp-gate__inscription { margin: 0; font-size: 12.5px; line-height: 1.5; color: #ffffff; }
+    .flp-gate__inscription strong { font-weight: 700; }
+
+    .flp-gate__scroll {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 18px 18px 22px;
+    }
+    .flp-gate__scroll:focus { outline: none; }
+    .flp-gate__scroll:focus-visible { outline: 3px solid #0d3b4c; outline-offset: -3px; }
+    .flp-gate__scroll p { margin: 0 0 12px; font-size: 15.5px; line-height: 1.55; }
+    .flp-gate__scroll p:last-child { margin-bottom: 0; }
+    .flp-gate__title {
+      margin: 0 0 12px;
+      font-size: 22px;
+      line-height: 1.25;
+      font-weight: 800;
+      color: #0d3b4c;
+      letter-spacing: -0.01em;
+    }
+    .flp-gate h2 {
+      margin: 18px 0 6px;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #0d3b4c;
+    }
+    .flp-gate__scroll p.flp-gate__updated {
+      margin: 18px 0 0;
+      font-size: 12.5px;
+      font-style: italic;
+      color: #46585f;
+    }
+
+    .flp-gate__bar {
+      flex: 0 0 auto;
+      padding: 10px 18px calc(12px + env(safe-area-inset-bottom, 0px));
+      background: #ffffff;
+      border-top: 1px solid #c8d4d9;
+      box-shadow: 0 -8px 20px rgba(9, 26, 36, 0.10);
+    }
+    .flp-gate__ack {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-height: 44px;
+      padding: 6px 0 2px;
+      cursor: pointer;
+    }
+    .flp-gate__ack input {
+      flex: 0 0 auto;
+      width: 22px;
+      height: 22px;
+      margin: 2px 0 0;
+      accent-color: #0d3b4c;
+      cursor: pointer;
+    }
+    .flp-gate__ack input:focus-visible { outline: 3px solid #b35c00; outline-offset: 3px; }
+    .flp-gate__acklabel { font-size: 16px; font-weight: 700; line-height: 1.4; color: #14232b; }
+    .flp-gate__bar p.flp-gate__sub { margin: 0 0 2px 34px; font-size: 13px; font-style: italic; color: #46585f; }
+    .flp-gate__bar p.flp-gate__help { margin: 0 0 10px 34px; font-size: 13px; color: #46585f; }
+    .flp-gate__bar p.flp-gate__noscript { margin: 10px 0 0; font-size: 13px; color: #46585f; }
+
+    .flp-gate__btn {
+      display: block;
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 18px;
+      border: 1px solid #0d3b4c;
+      border-radius: 10px;
+      background: #0d3b4c;
+      color: #ffffff;
+      font: inherit;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .flp-gate__btn:disabled {
+      background: #dfe6e9;
+      border-color: #c2ced3;
+      color: #4a5a61;
+      cursor: not-allowed;
+    }
+    .flp-gate__btn:not(:disabled):active { background: #08252f; }
+    .flp-gate__btn:focus-visible { outline: 3px solid #b35c00; outline-offset: 3px; }
+
+    @media (max-width: 420px) {
+      .flp-gate__scroll { padding: 14px 14px 18px; }
+      .flp-gate__bar { padding: 8px 14px calc(10px + env(safe-area-inset-bottom, 0px)); }
+      .flp-gate__title { font-size: 20px; }
+      .flp-gate__scroll p { font-size: 15px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .flp-gate * { transition: none !important; animation: none !important; }
+    }
+    /* Printing at the notice prints the notice, not a half-hidden app. */
+    @media print {
+      .flp-gate {
+        position: static !important;
+        display: block !important;
+        height: auto !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .flp-gate__scroll { overflow: visible !important; height: auto !important; padding: 0 !important; }
+      .flp-gate__bar { box-shadow: none !important; border-top: 1px solid #999999 !important; }
+    }
+  </style>
   <!-- Installable web app (Add to Home Screen) -->
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -27,6 +177,56 @@
   <link rel="manifest" href="manifest.json?v=4.0">
 </head>
 <body>
+  <!-- ===================================================================
+       ENTRY NOTICE - shown on every page load, nothing is stored between
+       loads, and Click to Enter stays disabled until the box is ticked.
+       It is a notice, not access control.
+       =================================================================== -->
+  <div id="flp-gate" class="flp-gate" role="dialog" aria-modal="true" aria-labelledby="flp-gate-title" tabindex="-1">
+    <div class="flp-gate__head">
+      <span class="flp-gate__flag"><svg viewBox="0 0 36 24" width="36" height="24" role="img" aria-label="The Gambia" focusable="false" xmlns="http://www.w3.org/2000/svg"><rect width="36" height="24" fill="#fff"/><rect width="36" height="8" fill="#ce1126"/><rect y="9.333" width="36" height="5.333" fill="#0c1c8c"/><rect y="16" width="36" height="8" fill="#3a7728"/></svg></span>
+      <p class="flp-gate__inscription"><strong>Republic of The Gambia</strong><br><strong>Ministry of Basic and Secondary Education (MoBSE)</strong><br><strong>Gambia FLP — Teacher Portal</strong></p>
+    </div>
+
+    <div class="flp-gate__scroll" id="flp-gate-scroll" tabindex="0" role="region" aria-label="Notice text">
+      <h1 class="flp-gate__title" id="flp-gate-title">Welcome to the Gambia FLP Teacher Portal</h1>
+
+      <p>This portal gives teachers and trainers early access to the Teacher Guides for ECD 2, ECD 3 and Grade 1 in all eight languages of instruction, the Grade 1 numeracy guide for the seven national languages, and the facilitator guides used in teacher training.</p>
+
+      <p>It is a temporary measure, developed by the CREDD–MoBSE Material Development Team to support teacher training and early access to the materials. It remains available pending the completion, by the MoBSE EdTech team, of the full integration and transition of the FLP hub to a dedicated page on the MoBSE EdTech hub.</p>
+
+      <p><strong>Using it for the first time.</strong> Choose your subject, language and class at the top of the guide. Your choices are kept on this device for your next visit. The eight languages are English, Jola, Mandinka, Manjaku, Pulaar, Seereer, Soninke and Wolof. The facilitator guides are for trainers running training sessions; the teacher guides are for classroom use.</p>
+
+      <p><strong>Using it without internet.</strong> After your first full visit while connected, most of the guide is saved on your device and opens without a connection. The first visit downloads the guide for the language you choose, so do it where the connection is good. For the safest offline copy, add the portal to your home screen: on Android, open the browser menu and choose <em>Add to Home screen</em>; on iPhone, do this in Safari — tap <em>Share</em>, then <em>Add to Home Screen</em>. Audio plays only for a recording you have already opened once while connected. Connect from time to time so that corrected content reaches you.</p>
+
+      <h2>Attribution</h2>
+      <p>The portal and the material within it are the official property of the Government of The Gambia, developed under the Gambia FLP of the Ministry of Basic and Secondary Education.</p>
+
+      <h2>Feedback</h2>
+      <p>If a guide will not open, a lesson is missing or incorrect, or you wish to report anything else about
+      the portal, use the feedback form: <a href="https://docs.google.com/forms/d/e/1FAIpQLSef-l8IznFIot16FS-DbJ_R0f1JGIL3BQMBK-W7LLDPpjKhGQ/viewform" target="_blank" rel="noopener">Report a problem or send
+      feedback</a>. The form asks which guide and which page you were on, so that the fault can be traced.
+      Please do not include the names of learners, or any personal details about a child, in the form.</p>
+
+      <!-- BRIEF section 5: this date is the publishing commit date. With no build
+           step it is fixed here and must be edited on each release. -->
+      <p class="flp-gate__updated">Last updated: 18 November 2026</p>
+    </div>
+
+    <div class="flp-gate__bar">
+      <label class="flp-gate__ack" for="flp-ack">
+        <input type="checkbox" id="flp-ack" aria-describedby="flp-ack-help">
+        <span class="flp-gate__acklabel">I have read and understood this notice.</span>
+      </label>
+      <p class="flp-gate__sub">You will see this notice each time you open the portal.</p>
+      <p class="flp-gate__help" id="flp-ack-help">Tick the box to continue.</p>
+      <button type="button" class="flp-gate__btn" id="flp-enter" disabled>Click to Enter</button>
+      <noscript><p class="flp-gate__noscript">This portal needs JavaScript to open. Turn JavaScript on, then reload this page.</p></noscript>
+    </div>
+  </div>
+
+  <!-- The portal interface. Hidden and inert until the reader enters. -->
+  <div id="app-shell" inert aria-hidden="true">
   <!-- Header / Navigation Bar -->
   <header class="app-header" id="app-header">
     <div class="header-top">
@@ -52,7 +252,7 @@
     <!-- Subject switch: the literacy guides and Grade 1 Numeracy -->
     <div class="subject-switch-row">
       <div class="subject-switch" role="group" aria-label="Choose subject">
-        <button type="button" class="subject-btn active" data-subject="literacy" aria-pressed="true">📖 Literacy</button>
+        <button type="button" class="subject-btn active" data-subject="literacy" aria-pressed="true" data-flp-first-control>📖 Literacy</button>
         <button type="button" class="subject-btn" data-subject="numeracy" aria-pressed="false">🔢 Numeracy</button>
       </div>
       <button type="button" class="subject-hint subject-hint-new" id="subject-hint">New: Grade 1 Numeracy →</button>
@@ -340,6 +540,81 @@
 
   <!-- Audio Synthesizer / Web Audio Notification Toast -->
   <div class="toast-notification hidden" id="toast-notification"></div>
+
+  </div><!-- /#app-shell -->
+
+  <!-- Entry notice controller. The service worker registration and the app's own
+       scripts stay exactly where they were, so precaching, offline caching and
+       Telegram.WebApp.ready() all still run on load. Only the interface
+       initialisation waits for entry: app.js and facilitator.js listen for the
+       flp:enter event dispatched here. -->
+  <script>
+    window.FLP_GATE_HOLD = true;
+    (function () {
+      var gate = document.getElementById('flp-gate');
+      if (!gate) { window.FLP_GATE_HOLD = false; return; }
+      var root = document.documentElement;
+      var ack = document.getElementById('flp-ack');
+      var enterBtn = document.getElementById('flp-enter');
+      var entered = false;
+
+      function focusable() {
+        var sel = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+        return Array.prototype.filter.call(gate.querySelectorAll(sel), function (el) {
+          return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+        });
+      }
+
+      // The box is a native checkbox: Space toggles it, Enter does not.
+      ack.addEventListener('change', function () {
+        enterBtn.disabled = !ack.checked;
+      });
+
+      // Tab cycles inside the notice while it is open.
+      gate.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var list = focusable();
+        if (!list.length) { e.preventDefault(); return; }
+        var first = list[0];
+        var last = list[list.length - 1];
+        var active = document.activeElement;
+        if (e.shiftKey) {
+          if (active === first || active === gate || !gate.contains(active)) {
+            e.preventDefault();
+            last.focus();
+          }
+        } else if (active === last || !gate.contains(active)) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
+
+      function enter() {
+        if (entered) return;
+        entered = true;
+        window.FLP_ENTERED = true;
+        root.classList.remove('flp-gate-open');
+        root.classList.add('flp-entered');
+        var shell = document.getElementById('app-shell');
+        if (shell) {
+          shell.removeAttribute('inert');
+          shell.removeAttribute('aria-hidden');
+        }
+        if (gate.parentNode) gate.parentNode.removeChild(gate);
+        document.dispatchEvent(new Event('flp:enter'));
+        var target = shell && shell.querySelector('[data-flp-first-control]');
+        if (target && target.focus) target.focus();
+      }
+
+      enterBtn.addEventListener('click', enter);
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { gate.focus(); });
+      } else {
+        gate.focus();
+      }
+    })();
+  </script>
 
   <!-- Application Script with Cache Buster -->
   <script src="app.js?v=4.3"></script>

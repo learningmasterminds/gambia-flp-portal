@@ -1681,5 +1681,14 @@ function loadEmbeddedFallback() {
   return loadCurriculum();
 }
 
-// Start application
-document.addEventListener('DOMContentLoaded', loadCurriculum);
+// Start application. The entry notice holds the interface back until the
+// reader enters, so the UI bootstrap runs on the flp:enter event dispatched by
+// the inline gate script. Nothing is fetched from data/ before that point;
+// Telegram.WebApp.ready() above and the service worker still run on load.
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.FLP_GATE_HOLD && !window.FLP_ENTERED) {
+    document.addEventListener('flp:enter', loadCurriculum, { once: true });
+  } else {
+    loadCurriculum();
+  }
+});
