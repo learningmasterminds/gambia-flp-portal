@@ -3,13 +3,17 @@
  * Multi-language ECD 2, ECD 3 and Grade 1, Term 1 (8 languages of instruction)
  */
 
-// Initialize Telegram WebApp SDK if present
-if (window.Telegram && window.Telegram.WebApp) {
-  const tg = window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
-  if (tg.setHeaderColor) {
-    tg.setHeaderColor('#091a24');
+// Initialize Telegram WebApp SDK if present. The SDK is loaded with defer, so it
+// exists by DOMContentLoaded; calling this from there keeps tg.ready() working
+// without letting telegram.org block the entry notice.
+function initTelegramSdk() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) {
+      tg.setHeaderColor('#091a24');
+    }
   }
 }
 
@@ -1687,6 +1691,7 @@ function loadEmbeddedFallback() {
 // (the service worker's precache does, and that is expected);
 // Telegram.WebApp.ready() above and the service worker still run on load.
 document.addEventListener('DOMContentLoaded', () => {
+  initTelegramSdk();
   // Chrome fires beforeinstallprompt once, near load, while the reader is still
   // on the notice; hold it before the gate so the Install button is not lost.
   setupInstallPrompt();

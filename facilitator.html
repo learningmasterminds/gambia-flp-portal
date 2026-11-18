@@ -90,9 +90,9 @@
     }
     /* Tap target for the feedback link inside the notice text. */
     .flp-gate__scroll a {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
       min-height: 44px;
-      padding: 8px 0;
       font-weight: 700;
     }
 
@@ -185,7 +185,7 @@
   <!-- Telegram WebApp SDK -->
   <script src="https://telegram.org/js/telegram-web-app.js" defer></script>
 
-  <link rel="stylesheet" href="styles.css?v=4.1" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="styles.css?v=4.1">
   <link rel="manifest" href="manifest.json?v=4.0">
 </head>
 <body class="facilitator-page">
@@ -428,6 +428,11 @@
       // The box is a native checkbox: Space toggles it, Enter does not.
       ack.addEventListener('change', function () {
         enterBtn.disabled = !ack.checked;
+        if (ack.checked) {
+          enterBtn.removeAttribute('aria-describedby');
+        } else {
+          enterBtn.setAttribute('aria-describedby', 'flp-ack-help');
+        }
       });
 
       // Tab cycles inside the notice while it is open.
@@ -476,7 +481,7 @@
         enterBtn.disabled = true;
       }
       resetGate();
-      window.addEventListener('pageshow', resetGate);
+      window.addEventListener('pageshow', function (e) { if (e.persisted) resetGate(); });
 
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function () { gate.focus(); });

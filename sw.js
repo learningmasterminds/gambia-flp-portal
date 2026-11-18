@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gambia-flp-v21';
+const CACHE_NAME = 'gambia-flp-v22';
 
 // Only the app shell and the primary audio source per track. The duplicate
 // fallback encodings are fetched on demand rather than bloating install.
@@ -25,6 +25,9 @@ const ASSETS_TO_CACHE = [
   './audio/wolof/wol_ecd2_w01_story.ogg'
 ];
 
+const CORE_ASSETS = ASSETS_TO_CACHE.filter((url) => !/\.(json|ogg|m4a)$/.test(url) || url.endsWith('manifest.json'));
+const OPTIONAL_ASSETS = ASSETS_TO_CACHE.filter((url) => CORE_ASSETS.indexOf(url) === -1);
+
 // Audio is large and immutable, so it is served cache-first. Everything else
 // is code or content that must be allowed to change: serving index.html
 // cache-first made the ?v= cache-buster inert for returning teachers, because
@@ -37,11 +40,15 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      // No catch: addAll is all-or-nothing. Swallowing the error would leave
-      // this cache empty while activate deletes the previous one, and a teacher
-      // with no connection would get nothing at all. A failed install leaves the
-      // old worker and its cache in place, and the browser retries later.
-      return cache.addAll(ASSETS_TO_CACHE);
+      // The shell must all be there, or there is no offline copy at all: if any
+      // of it fails, the install fails and the old worker and cache survive.
+      // Lesson data and recordings are allowed to fail one by one, so a single
+      // missing file cannot deny a teacher the whole guide.
+      return cache.addAll(CORE_ASSETS).then(() => Promise.all(
+        OPTIONAL_ASSETS.map((url) => cache.add(url).catch((err) => {
+          console.warn('Skipped for offline cache:', url, err);
+        }))
+      ));
     })
   );
 });
