@@ -695,12 +695,16 @@
         else cue.classList.remove('is-hidden');
       }
       if (scroller) scroller.addEventListener('scroll', updateCue, { passive: true });
+      // Re-measure after a rotation, once the new layout exists.
+      window.addEventListener('resize', function () { setTimeout(updateCue, 60); });
+      window.addEventListener('orientationchange', function () { setTimeout(updateCue, 120); });
+      window.addEventListener('load', function () { setTimeout(updateCue, 80); });
       if ('IntersectionObserver' in window && block && scroller) {
         new IntersectionObserver(function (entries) {
           for (var i = 0; i < entries.length; i++) {
             if (entries[i].isIntersecting) hideCue();
           }
-        }, { root: scroller, threshold: 0.2 }).observe(block);
+        }, { root: scroller, threshold: 0.05 }).observe(block);
       }
 
       // A restored page (back/forward, some reloads) can bring the box back
@@ -712,6 +716,8 @@
         enterBtn.setAttribute('aria-describedby', 'flp-ack-help');
         if (scroller) scroller.scrollTop = 0;
         if (cue) cue.classList.remove('is-hidden');
+        // Nothing to scroll on a tall screen: no cue, the block is already there.
+        updateCue();
       }
       resetGate();
       window.addEventListener('pageshow', function (e) { if (e.persisted) resetGate(); });
