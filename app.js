@@ -3,13 +3,17 @@
  * Multi-language ECD 2, ECD 3 and Grade 1, Term 1 (8 languages of instruction)
  */
 
-// Initialize Telegram WebApp SDK if present
-if (window.Telegram && window.Telegram.WebApp) {
-  const tg = window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
-  if (tg.setHeaderColor) {
-    tg.setHeaderColor('#091a24');
+// Initialize Telegram WebApp SDK if present. The SDK is loaded with defer, so it
+// exists by DOMContentLoaded; calling this from there keeps tg.ready() working
+// without letting telegram.org block the entry notice.
+function initTelegramSdk() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) {
+      tg.setHeaderColor('#091a24');
+    }
   }
 }
 
@@ -1681,5 +1685,20 @@ function loadEmbeddedFallback() {
   return loadCurriculum();
 }
 
-// Start application
-document.addEventListener('DOMContentLoaded', loadCurriculum);
+// Start application. The entry notice holds the interface back until the
+// reader enters, so the UI bootstrap runs on the flp:enter event dispatched by
+// the inline gate script. The page fetches nothing from data/ before that point
+// (the service worker's precache does, and that is expected);
+// Telegram.WebApp.ready() runs from the DOMContentLoaded handler below, and the
+// service worker registers on load.
+document.addEventListener('DOMContentLoaded', () => {
+  initTelegramSdk();
+  // Chrome fires beforeinstallprompt once, near load, while the reader is still
+  // on the notice; hold it before the gate so the Install button is not lost.
+  setupInstallPrompt();
+  if (window.FLP_GATE_HOLD && !window.FLP_ENTERED) {
+    document.addEventListener('flp:enter', loadCurriculum, { once: true });
+  } else {
+    loadCurriculum();
+  }
+});

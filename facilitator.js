@@ -13,11 +13,15 @@
  *             facilitator.html?guide=numeracy&module=2&session=3
  */
 
-if (window.Telegram && window.Telegram.WebApp) {
-  const tg = window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
-  if (tg.setHeaderColor) tg.setHeaderColor('#091a24');
+// The SDK is loaded with defer, so it exists by DOMContentLoaded; calling this
+// from there keeps tg.ready() working without blocking the entry notice.
+function initTelegramSdk() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+    if (tg.setHeaderColor) tg.setHeaderColor('#091a24');
+  }
 }
 
 const GUIDES = {
@@ -651,4 +655,15 @@ function setupEventListeners() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', () => loadGuide());
+// The entry notice holds the interface back until the reader enters, so the UI
+// bootstrap runs on the flp:enter event dispatched by the inline gate script.
+// Telegram.WebApp.ready() runs from the DOMContentLoaded handler below, and the
+// service worker registers on load.
+document.addEventListener('DOMContentLoaded', () => {
+  initTelegramSdk();
+  if (window.FLP_GATE_HOLD && !window.FLP_ENTERED) {
+    document.addEventListener('flp:enter', () => loadGuide(), { once: true });
+  } else {
+    loadGuide();
+  }
+});
