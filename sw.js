@@ -15,7 +15,7 @@ const ASSETS_TO_CACHE = [
   './data/wolof_ecd2_term1.json',
   './data/wolof_grade1_term1.json',
   './facilitator.html',
-  './facilitator.js?v=4.0',
+  './facilitator.js?v=4.1',
   './data/facilitator_guide.json',
   './data/facilitator_guide_numeracy.json',
   './data/wolof_grade1_term1_numeracy.json',
@@ -37,9 +37,11 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE).catch((err) => {
-        console.warn('Cache addAll non-fatal warning:', err);
-      });
+      // No catch: addAll is all-or-nothing. Swallowing the error would leave
+      // this cache empty while activate deletes the previous one, and a teacher
+      // with no connection would get nothing at all. A failed install leaves the
+      // old worker and its cache in place, and the browser retries later.
+      return cache.addAll(ASSETS_TO_CACHE);
     })
   );
 });

@@ -1683,9 +1683,13 @@ function loadEmbeddedFallback() {
 
 // Start application. The entry notice holds the interface back until the
 // reader enters, so the UI bootstrap runs on the flp:enter event dispatched by
-// the inline gate script. Nothing is fetched from data/ before that point;
+// the inline gate script. The page fetches nothing from data/ before that point
+// (the service worker's precache does, and that is expected);
 // Telegram.WebApp.ready() above and the service worker still run on load.
 document.addEventListener('DOMContentLoaded', () => {
+  // Chrome fires beforeinstallprompt once, near load, while the reader is still
+  // on the notice; hold it before the gate so the Install button is not lost.
+  setupInstallPrompt();
   if (window.FLP_GATE_HOLD && !window.FLP_ENTERED) {
     document.addEventListener('flp:enter', loadCurriculum, { once: true });
   } else {
