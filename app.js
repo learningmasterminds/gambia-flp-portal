@@ -6,6 +6,12 @@
 // Initialize Telegram WebApp SDK if present. The SDK is loaded with defer, so it
 // exists by DOMContentLoaded; calling this from there keeps tg.ready() working
 // without letting telegram.org block the entry notice.
+
+// Where this copy of the guide is being served from, always with a trailing slash.
+// Shared lesson links are built on it, so a share from the GitHub copy points at
+// GitHub and a share from the ministry address points at the ministry: moving the
+// portal no longer leaves dead links behind in teachers' WhatsApp messages.
+const SHARE_BASE = new URL('./', window.location.href).href;
 function initTelegramSdk() {
   if (window.Telegram && window.Telegram.WebApp) {
     const tg = window.Telegram.WebApp;
@@ -1582,13 +1588,13 @@ function setupEventListeners() {
     if (l.subject === 'numeracy') {
       const acts = l.activities.filter(a => a.numeracy === 'activity')
         .map(a => `• ${a.title}${a.duration_mins ? ` (${a.duration_mins} min)` : ''}`).join('\n');
-      const text = `🔢 *Gambia FLP - ${currentLanguageLabel()} Grade 1 Numeracy (Term 1)*\n\n📌 *Lesson ${l.lesson_number}: ${l.lesson_type}*\n🧩 *Unit ${l.unit_code}*: ${l.theme}\n⏱️ *Duration*: ${l.duration_mins || 60} Minutes (${l.activities.filter(a => a.numeracy === 'pool').map(a => `${a.poolKind === 'mental' ? 'Mental Maths' : 'Reinforcement'} ${a.duration_mins} · `).join('')}Activities · Closure 10)\n\n📋 *Activities*\n${acts}\n${l.pb_refs.length ? `📘 *Pupil Book*: Activity ${l.pb_refs.join(', ')}\n` : ''}\n📖 *Open Full Interactive Guide*: https://t.me/gambiaflp_bot\n🌐 https://learningmasterminds.github.io/gambia-flp-guide/?subject=numeracy&grade=${state.currentGrade}&lang=${state.currentLanguage}&week=${l.week}&day=${l.day_number}`;
+      const text = `🔢 *Gambia FLP - ${currentLanguageLabel()} Grade 1 Numeracy (Term 1)*\n\n📌 *Lesson ${l.lesson_number}: ${l.lesson_type}*\n🧩 *Unit ${l.unit_code}*: ${l.theme}\n⏱️ *Duration*: ${l.duration_mins || 60} Minutes (${l.activities.filter(a => a.numeracy === 'pool').map(a => `${a.poolKind === 'mental' ? 'Mental Maths' : 'Reinforcement'} ${a.duration_mins} · `).join('')}Activities · Closure 10)\n\n📋 *Activities*\n${acts}\n${l.pb_refs.length ? `📘 *Pupil Book*: Activity ${l.pb_refs.join(', ')}\n` : ''}\n📖 *Open Full Interactive Guide*: https://t.me/gambiaflp_bot\n🌐 ${SHARE_BASE}?subject=numeracy&grade=${state.currentGrade}&lang=${state.currentLanguage}&week=${l.week}&day=${l.day_number}`;
       shareLessonText(text);
       return;
     }
     const sessionTag = l.sessionCount > 1 ? ` · Session ${l.session}` : '';
     const sessionParam = l.sessionCount > 1 ? `&session=${String(l.session || 'a').toLowerCase()}` : '';
-    const shareText = `📚 *Gambia FLP - ${currentLanguageLabel()} ${currentGradeLabel()} (Term 1)*\n\n📌 *Lesson ${l.lesson_number}${sessionTag} (Week ${l.week}, Day ${l.day_number} - ${l.day_name})*\n🏷️ *Type*: ${l.lesson_type}\n🌱 *Theme*: ${l.theme || 'Community'}\n🔤 *Target Letter*: ${l.target_letter || 'Alphabet'}\n🗣️ *Key Vocab*: ${(l.vocabulary || []).join(', ')}\n⏱️ *Duration*: ${l.duration_mins || 30} Minutes\n\n📖 *Open Full Interactive Guide*: https://t.me/gambiaflp_bot\n🌐 https://learningmasterminds.github.io/gambia-flp-guide/?grade=${state.currentGrade}&lang=${state.currentLanguage}&week=${l.week}&day=${l.day_number}${sessionParam}`;
+    const shareText = `📚 *Gambia FLP - ${currentLanguageLabel()} ${currentGradeLabel()} (Term 1)*\n\n📌 *Lesson ${l.lesson_number}${sessionTag} (Week ${l.week}, Day ${l.day_number} - ${l.day_name})*\n🏷️ *Type*: ${l.lesson_type}\n🌱 *Theme*: ${l.theme || 'Community'}\n🔤 *Target Letter*: ${l.target_letter || 'Alphabet'}\n🗣️ *Key Vocab*: ${(l.vocabulary || []).join(', ')}\n⏱️ *Duration*: ${l.duration_mins || 30} Minutes\n\n📖 *Open Full Interactive Guide*: https://t.me/gambiaflp_bot\n🌐 ${SHARE_BASE}?grade=${state.currentGrade}&lang=${state.currentLanguage}&week=${l.week}&day=${l.day_number}${sessionParam}`;
 
     shareLessonText(shareText);
   });

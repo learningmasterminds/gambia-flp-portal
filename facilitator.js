@@ -28,7 +28,9 @@ const GUIDES = {
   literacy: { file: './data/facilitator_guide.json', group: 'Day', param: 'day' },
   numeracy: { file: './data/facilitator_guide_numeracy.json', group: 'Module', param: 'module' }
 };
-const HUB_URL = 'https://learningmasterminds.github.io/gambia-flp-guide/';
+// Where this copy of the guide is served from, so shared guide links follow the
+// portal when it moves from GitHub Pages to the ministry's address.
+const HUB_URL = new URL('./', window.location.href).href;
 
 // Icons for the facilitation modes in the guide's left-hand column.
 const MODE_ICONS = {
